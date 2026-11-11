@@ -1,3 +1,4 @@
+import importlib
 import os
 import sys
 from multiprocessing import Process
@@ -26,7 +27,8 @@ TIMEOUT_ASSERT_MSG = (
 
 
 def import_the_snake():
-    import the_snake  # noqa
+    # Используем importlib вместо import, чтобы flake8 не ругался (F401)
+    importlib.import_module('the_snake')
 
 
 @pytest.fixture(scope='session')
@@ -50,8 +52,10 @@ def _the_snake(snake_import_test):
             f'{type(error).__name__}: {error}'
         )
     for class_name in ('GameObject', 'Snake', 'Apple'):
+        # Разбили длинную строку, чтобы исправить ошибку E501
         assert hasattr(the_snake, class_name), (
-            f'Убедитесь, что в модуле `the_snake` определен класс `{class_name}`.'
+            f'Убедитесь, что в модуле `the_snake` определен класс '
+            f'`{class_name}`.'
         )
     return the_snake
 
