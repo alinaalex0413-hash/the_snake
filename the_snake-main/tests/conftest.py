@@ -18,15 +18,15 @@ TIMEOUT_ASSERT_MSG = (
     'Проект работает некорректно, проверка прервана.\n'
     'Вероятные причины ошибки:\n'
     '1. Исполняемый код (например, вызов функции `main()`) оказался в '
-    'глобальной зоне видимости. Как исправить: вызов функции `main` поместите '
-    'внутрь конструкции `if __name__ == "__main__":`.\n'
-    '2. В цикле `while True` внутри функции `main` отсутствует вызов метода '
-    '`tick` объекта `clock`. Не изменяйте прекод в этой части.'
+    'глобальной зоне видимости. Как исправить: вызов функции `main` '
+    'поместите внутрь конструкции `if __name__ == "__main__":`.\n'
+    '2. В цикле `while True` внутри функции `main` отсутствует вызов '
+    'метода `tick` объекта `clock`. Не изменяйте прекод в этой части.'
 )
 
 
 def import_the_snake():
-    import the_snake  # noqa: E401
+    import the_snake  # noqa: F401, E401
 
 
 @pytest.fixture(scope='session')
@@ -50,9 +50,11 @@ def _the_snake(snake_import_test):
             f'{type(error).__name__}: {error}'
         )
     for class_name in ('GameObject', 'Snake', 'Apple'):
-        assert hasattr(the_snake, class_name), (
-            f'Убедитесь, что в модуле `the_snake` определен класс `{class_name}`.'
-        )  # noqa: E501
+        msg = (
+            f'Убедитесь, что в модуле `the_snake` '
+            f'определен класс `{class_name}`.'
+        )
+        assert hasattr(the_snake, class_name), msg
     return the_snake
 
 
@@ -77,11 +79,12 @@ def _create_game_object(class_name, module):
         return getattr(module, class_name)()
     except TypeError as error:
         raise AssertionError(
-            f'При создании объекта класса `{class_name}` произошла ошибка:\n'
+            f'При создании объекта класса `{class_name}` '
+            f'произошла ошибка:\n'
             f'`{type(error).__name__}: {error}`\n'
             f'Если в конструктор класса `{class_name}` помимо параметра '
-            '`self` передаются какие-то ещё параметры - убедитесь, что для '
-            'них установлены значения по умолчанию. Например:\n'
+            '`self` передаются какие-то ещё параметры - убедитесь, что '
+            'для них установлены значения по умолчанию. Например:\n'
             '`def __init__(self, <параметр>=<значение_по_умолчанию>):`'
         )
 
