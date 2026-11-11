@@ -1,4 +1,4 @@
-﻿import pygame
+import pygame
 from random import choice, randint
 
 # Константы для размеров поля и сетки:
@@ -35,11 +35,15 @@ clock = pygame.time.Clock()
 
 
 class GameObject:
+    """Базовый класс для игровых объектов."""
+
     def __init__(self, position=(0, 0), body_color=(0, 0, 0)):
+        """Инициализация игрового объекта."""
         self.position = position
         self.body_color = body_color
 
     def draw(self):
+        """Отрисовка объекта на экране."""
         rect = pygame.Rect(
             self.position, (GRID_SIZE, GRID_SIZE)
         )
@@ -48,7 +52,10 @@ class GameObject:
 
 
 class Apple(GameObject):
+    """Класс яблока, которое собирает змейка."""
+
     def __init__(self):
+        """Инициализация яблока со случайной позицией."""
         position = (
             randint(0, GRID_WIDTH - 1) * GRID_SIZE,
             randint(0, GRID_HEIGHT - 1) * GRID_SIZE
@@ -56,6 +63,7 @@ class Apple(GameObject):
         super().__init__(position, APPLE_COLOR)
 
     def randomize_position(self):
+        """Изменение позиции яблока на случайную."""
         self.position = (
             randint(0, GRID_WIDTH - 1) * GRID_SIZE,
             randint(0, GRID_HEIGHT - 1) * GRID_SIZE
@@ -63,12 +71,16 @@ class Apple(GameObject):
 
 
 class Snake(GameObject):
+    """Класс змейки."""
+
     def __init__(self):
+        """Инициализация змейки."""
         position = (GRID_SIZE * 2, GRID_SIZE * 2)
         super().__init__(position, SNAKE_COLOR)
         self.reset()
 
     def update_position(self):
+        """Обновление позиции змейки на игровом поле."""
         head_x, head_y = self.get_head_position()
         dir_x, dir_y = self.direction
         new_head = (
@@ -87,6 +99,7 @@ class Snake(GameObject):
     move = update_position
 
     def draw(self):
+        """Отрисовка змейки на экране."""
         for position in self.positions[:-1]:
             rect = pygame.Rect(
                 position, (GRID_SIZE, GRID_SIZE)
@@ -109,6 +122,7 @@ class Snake(GameObject):
             )
 
     def reset(self):
+        """Сброс змейки в начальное состояние."""
         self.length = 3
         self.positions = [self.position]
         self.direction = choice(
@@ -118,35 +132,47 @@ class Snake(GameObject):
         self.last = None
 
     def get_head_position(self):
+        """Получение координат головы змейки."""
         return self.positions[0]
 
     def update_direction(self):
+        """Применение новой направления движения."""
         if self.next_direction:
             self.direction = self.next_direction
             self.next_direction = None
 
 
 def handle_keys(game_object):
+    """Обработка нажатий клавиш клавиатуры."""
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             raise SystemExit
         elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_UP and \
-                    game_object.direction != DOWN:
+            if (
+                event.key == pygame.K_UP
+                and game_object.direction != DOWN
+            ):
                 game_object.next_direction = UP
-            elif event.key == pygame.K_DOWN and \
-                    game_object.direction != UP:
+            elif (
+                event.key == pygame.K_DOWN
+                and game_object.direction != UP
+            ):
                 game_object.next_direction = DOWN
-            elif event.key == pygame.K_LEFT and \
-                    game_object.direction != RIGHT:
+            elif (
+                event.key == pygame.K_LEFT
+                and game_object.direction != RIGHT
+            ):
                 game_object.next_direction = LEFT
-            elif event.key == pygame.K_RIGHT and \
-                    game_object.direction != LEFT:
+            elif (
+                event.key == pygame.K_RIGHT
+                and game_object.direction != LEFT
+            ):
                 game_object.next_direction = RIGHT
 
 
 def main():
+    """Главная функция запуска игры."""
     pygame.init()
     apple = Apple()
     snake = Snake()
