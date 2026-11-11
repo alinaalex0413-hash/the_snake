@@ -1,12 +1,13 @@
+import importlib
 import os
 import sys
 from multiprocessing import Process
 from pathlib import Path
 from typing import Any
 
-from pygame.time import Clock
 import pytest
 import pytest_timeout
+from pygame.time import Clock
 
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 sys.path.append(str(BASE_DIR))
@@ -26,7 +27,8 @@ TIMEOUT_ASSERT_MSG = (
 
 
 def import_the_snake():
-    import the_snake  # noqa: F401
+    # Используем importlib, чтобы линтер не ругался на неиспользуемый импорт
+    importlib.import_module('the_snake')
 
 
 @pytest.fixture(scope='session')
@@ -50,11 +52,10 @@ def _the_snake(snake_import_test):
             f'{type(error).__name__}: {error}'
         )
     for class_name in ('GameObject', 'Snake', 'Apple'):
-        msg = (
+        assert hasattr(the_snake, class_name), (
             f'Убедитесь, что в модуле `the_snake` '
             f'определен класс `{class_name}`.'
         )
-        assert hasattr(the_snake, class_name), msg
     return the_snake
 
 
